@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -9,6 +10,7 @@ from scipy.integrate import quad, simps
 N = 2
 L = 1
 Jmax = 4
+
 f1 = 1.0
 f2 = 0.1
 wl = 532e-9
@@ -17,13 +19,13 @@ fFR = 1.6
 a = 5.e-2
 b = 1000*a
 k = 2*np.pi / wl
-orders = [-1,0]
+j = np.array([-1,0])
+m = L*(1 + j*N) 
+print (m)
 #m = 1
 rmax = a*f2/f1
 
-NN = 32*2
-nmax = 5
-smax = 5
+NN = 32*2 
 x = np.linspace(-2*rmax/1,2*rmax/1,NN)
 #x = np.linspace(-5,5,NN)
 X,Y = np.meshgrid(x,x)
@@ -50,14 +52,14 @@ def do_image(m):
         I2 = np.trapz(integrand(rho, m, r), x = rho)
         indices = np.where(R == r)
         u_m[indices] = I2
-        print id
+        print (id)
         id+=1
     
     return K1 * u_m
 
 U_RT = 0 #U(r,theta)
-for m in orders:
-    U_RT += do_image(m)
+for i in m:
+    U_RT += do_image(i)
 
 plt.imshow(abs(U_RT)**2, norm = colors.LogNorm())
 plt.colorbar()
