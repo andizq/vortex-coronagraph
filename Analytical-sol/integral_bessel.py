@@ -17,10 +17,11 @@ fFR = 1.6
 a = 5.e-2
 b = 1000*a
 k = 2*np.pi / wl
+orders = [-1,0]
 #m = 1
 rmax = a*f2/f1
 
-NN = 32*2/4
+NN = 32*2
 nmax = 5
 smax = 5
 x = np.linspace(-2*rmax/1,2*rmax/1,NN)
@@ -55,7 +56,7 @@ def do_image(m):
     return K1 * u_m
 
 U_RT = 0 #U(r,theta)
-for m in [1]:
+for m in orders:
     U_RT += do_image(m)
 
 plt.imshow(abs(U_RT)**2, norm = colors.LogNorm())
