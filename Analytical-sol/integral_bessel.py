@@ -1,3 +1,6 @@
+# Prueba #
+##########
+
 from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,12 +23,12 @@ a = 5.e-2
 b = 1000*a
 k = 2*np.pi / wl
 j = np.array([-1,0])
-m = L*(1 + j*N) 
+m = L*(1 + j*N)
 print (m)
 #m = 1
 rmax = a*f2/f1
 
-NN = 32*2 
+NN = 32*2
 x = np.linspace(-2*rmax/1,2*rmax/1,NN)
 #x = np.linspace(-5,5,NN)
 X,Y = np.meshgrid(x,x)
@@ -42,9 +45,9 @@ def do_image(m):
     u_m = np.zeros((NN,NN)) + 1j*np.zeros((NN,NN))
 
     arg = np.pi * m / (L*N)
-    K1 = (np.exp(-1j*arg) * np.sinc(arg) 
-          * (k*a/f2) * (1j**(3*abs(m)-2)) 
-          * np.exp(1j*k*(f2+z0)) 
+    K1 = (np.exp(-1j*arg) * np.sinc(arg)
+          * (k*a/f2) * (1j**(3*abs(m)-2))
+          * np.exp(1j*k*(f2+z0))
           * np.exp(1j*m*T))
 
     id = 0
@@ -54,7 +57,7 @@ def do_image(m):
         u_m[indices] = I2
         print (id)
         id+=1
-    
+
     return K1 * u_m
 
 U_RT = 0 #U(r,theta)
