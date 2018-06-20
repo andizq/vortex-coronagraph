@@ -10,9 +10,9 @@ from scipy.misc import factorial
 from scipy.integrate import quad, simps
 
 # parametros
-N = 3
-L = 3
-jobs = -1
+N = 2
+L = 1
+jobs = 0
 mobs = L*(1 + jobs*N)
 
 
@@ -31,16 +31,17 @@ k = 2*np.pi / wl
 j = np.array([-1,0]) #np.array([-1,0])
 m = L*(1 + j*N)
 print (m)
-rmax = 2*10.e-6 #1e-2 * a*f2/f1
+#rmax = 2*10.e-6 #Gaussian case
+rmax = a*f2/f1
 
-NN = 33 #64/4
+NN = 63 #64/4
 x = np.linspace(-2*rmax/1,2*rmax/1,NN)
 #x = np.linspace(-5,5,NN)
 X,Y = np.meshgrid(x,x)
 R = np.sqrt(X**2+Y**2)
 T = np.arctan2(Y,X)
 
-def integrand(rho,m,r):
+def integrand_bessel(rho,m,r):
     alpha = 0.5*1j*k * (m/(L*fFR) + z0/f2**2 - 1/f1 - 1/f2)
     return j1(k*a/f1 * rho) * np.exp(-alpha * rho**2) * jv(m, k*r/f2 * rho)
 
@@ -58,20 +59,24 @@ def do_image(m, gauss = True):
 
     arg = np.pi * m / (L*N)
     
-    if gauss: 
+    if gauss:
+        integrand = integrand_gauss
         K1 = (np.exp(-1j*arg) * np.sinc(arg / np.pi) #The sinc in np is defined as sinc(x) = sin(pi*x) / pi*x 
               * (k/f2) * (1j**(3*m+1))
               * np.exp(1j*k*(f2+z0))
               * np.exp(1j*m*T))
     else:
+        integrand = integrand_bessel
         K1 = (np.exp(-1j*arg) * np.sinc(arg / np.pi)
               * (k*a/f2) * (1j**(3*abs(m)-2))
               * np.exp(1j*k*(f2+z0))
               * np.exp(1j*m*T))
 
     id = 0
+    
+    
     for r in R_unique:
-        I2 = np.trapz(integrand_gauss(rho, m, r), x = rho)
+        I2 = np.trapz(integrand(rho, m, r), x = rho)
         indices = np.where(R == r)
         u_m[indices] = I2
         print (id)
@@ -81,14 +86,14 @@ def do_image(m, gauss = True):
 
 U_RT = 0 #U(r,theta)
 for i in m:
-    U_RT += do_image(i)
+    U_RT += do_image(i, gauss = False)
 
 INT = abs(U_RT)**2
 INT_max = np.max(INT)
 plt.imshow(INT / INT_max) #, norm = colors.LogNorm())
 plt.colorbar()
-#plt.savefig("int_bessel.png")
-plt.savefig("int_gauss_N%d_L%d_mobs%d.png"%(N,L,mobs))
+plt.savefig("int_bessel._N%d_L%d_mobs%d.png"%(N,L,mobs))
+#plt.savefig("int_gauss_N%d_L%d_mobs%d.png"%(N,L,mobs))
 plt.show()
 
 #integral from 0 to inf of (J1(2pi*a*rho / lamb*f1) * exp(-alpha*rho**2) * Jm(k*rho*r/f2)) drho
