@@ -19,14 +19,23 @@ import vortexGEN_fewlevels as vGEN_FL #Few levels
 from matplotlib import gridspec
 
 #-------------------------
-#LENSES PARAMETERS (in mm)
+#OPTICAL PARAMETERS (in mm)
 #-------------------------
-
+"""
 f1 = 1000. 
-R1 = 50. 
+#R1 = 50. 
 f2 = 300.
-R2 = 6. #Apperture stop radius
+R2 = 6. #Apperture and Lyot stop radius
 f3 = 250.
+wl = 532.e-6 #wavelength in mm  (green)
+"""
+
+f1 = 200. 
+#R1 = 0.8 
+f2 = 200.
+R2 = 8./10 #Apperture and Lyot stop radius
+f3 = 300.
+wl = 532.e-6 #wavelength in mm  (green)
 
 #-------------------------
 #-------------------------
@@ -35,9 +44,12 @@ f3 = 250.
 #SAMPLING
 #---------
 
-L = 100. #plane size in mm
-M = 4096 #number of samples
-dx = L/M
+M = 2**11 #2**12=4096 #number of samples
+dx = 26.e-3 #Modulator's pixel size in mm
+L = M*dx #100. #plane size in mm
+#dx = L/M
+
+
 
 #R2 = 247*dx
 #---------
@@ -48,9 +60,7 @@ dx = L/M
 #------------------
 Factor = 1/L/dx
 
-wl = 532.e-6 #wavelength in mm  (green)
 k = 2.*np.pi/wl
-
 
 Ray = 1.22*wl/(2*R2)
 RayL = Ray*f2 #Approx. size of Airy disk at plane f2: Tan(Ray)=RayL/f2-->Ray=RayL/f2
@@ -228,17 +238,18 @@ C = np.zeros((M,M),'complex')
 
 RC = L/9# 2*R2 #Radius of the SPP
 m = 2
-N = 4
+N = 10
 lim1C=M/2-(int(RC/dx)+10) #Number of pixels needed to reach Rf plus a                                                                                                               
 lim2C=M/2+(int(RC/dx)+10) # little extra-range, centered in M/2.                                                                                                                  
                           #  This is to minimize the computational journey
 
 #C[lim1C:lim2C,lim1C:lim2C] = vGEN.SPP(x[lim1C:lim2C],y[lim1C:lim2C],m,RC,256)  #RC: Function expects the radius
-C[lim1C:lim2C,lim1C:lim2C] = vGEN_FL.SPP(x[lim1C:lim2C],y[lim1C:lim2C],m,RC,N)  #RC: Function expects the radius
+#C[lim1C:lim2C,lim1C:lim2C] = vGEN_FL.SPP(x[lim1C:lim2C],y[lim1C:lim2C],m,RC,N)  #RC: Function expects the radius
 
 #C = vGEN.SPP(x,y,8,R2,256) #Optimo N=256. m=4-->32, Siguen m=5-->48, m=20--70, m=2,3=6=7-->80,30-->400,15-->1000, 25-->2000, 8-->3000
 #C = vGEN_FL.SPP(x,y,4,R2,7) #Optimo N=4. m=2 --> 1%
 
+C = vGEN.SPP(m,N,L,dx)
 FaseC = CIL.phase(C)
 
 ax=plt.axes()
